@@ -15,6 +15,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import Link from "next/link";
+import { CaseInvite } from "@/components/notifications/case-invite";
 import { notificationHref, useMarkRead, useNotifications } from "@/components/notifications/use-notifications";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -66,11 +67,11 @@ export function NotificationList() {
           {data.items.map((n) => {
             const Icon = ICONS[n.type] ?? Bell;
             return (
-              <li key={n.id}>
+              <li key={n.id} className={cn("flex gap-3 p-4", !n.readAt && "bg-primary/5")}>
                 <Link
                   href={notificationHref(n)}
                   onClick={() => !n.readAt && markRead.mutate([n.id])}
-                  className={cn("flex gap-3 p-4 transition-colors hover:bg-muted/50", !n.readAt && "bg-primary/5")}
+                  className="flex min-w-0 flex-1 gap-3"
                 >
                   <span
                     className={cn(
@@ -83,10 +84,15 @@ export function NotificationList() {
                   <div className="min-w-0 flex-1">
                     <p className={cn("text-sm", !n.readAt && "font-semibold")}>{n.title}</p>
                     <p className="text-sm text-muted-foreground">{n.body}</p>
-                    <p className="mt-0.5 text-xs text-muted-foreground">{timeAgo(n.createdAt)}</p>
+                    <p className="mt-0.5 text-xs text-muted-foreground">
+                      {timeAgo(n.createdAt)}
+                      {n.response === "accepted" ? " · Accepted — on your profile" : ""}
+                      {n.response === "declined" ? " · Rejected" : ""}
+                    </p>
                   </div>
                   {!n.readAt && <span className="mt-1.5 size-2 shrink-0 rounded-full bg-primary" />}
                 </Link>
+                <CaseInvite item={n} viewer={data.viewer} />
               </li>
             );
           })}

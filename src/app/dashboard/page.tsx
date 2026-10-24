@@ -45,7 +45,7 @@ async function DashboardBody() {
       .where(eq(users.id, user.id)),
     db.select().from(vetProfiles).where(eq(vetProfiles.userId, user.id)),
     listCases({ reporterId: user.id, scope: "all", limit: 8 }),
-    getRespondedCaseIds(user.id, true),
+    getRespondedCaseIds(user.id),
     getUserBadges(user.id),
     getUserStats(user.id),
   ]);
@@ -88,9 +88,14 @@ async function DashboardBody() {
         )}
 
         <section className="space-y-3">
-          <h2 className="text-lg font-semibold">Active responses</h2>
+          <div className="flex items-end justify-between gap-3">
+            <h2 className="text-lg font-semibold">My cases</h2>
+            <Link href={`/profile/${user.id}?tab=cases`} className="text-base text-[#5c6b54]">
+              Open on your profile
+            </Link>
+          </div>
           {active.length === 0 ? (
-            <EmptyCases text="You haven't claimed any open cases." href="/cases" label="Browse cases" />
+            <EmptyCases text="Accept a nearby case and it stays here." href="/cases" label="Browse cases" />
           ) : (
             active.map((c) => <CaseCard key={c.id} c={c} />)
           )}

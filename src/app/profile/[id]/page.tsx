@@ -1,6 +1,7 @@
 import { eq } from "drizzle-orm";
 import { Award, MapPin, Stethoscope } from "lucide-react";
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { CaseCard } from "@/components/cases/case-card";
@@ -11,6 +12,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { db } from "@/db";
 import { users } from "@/db/schema";
+import { getCurrentUser } from "@/lib/auth";
 import { formatMoney, initials } from "@/lib/format";
 import { listCases } from "@/lib/queries/cases";
 import { getPublicProfile, getRespondedCaseIds, getUserBadges, getUserStats } from "@/lib/queries/users";
@@ -21,8 +23,18 @@ export async function generateMetadata({ params }: PageProps<"/profile/[id]">): 
   return { title: u?.name ?? "Profile" };
 }
 
-async function Profile({ params }: { params: PageProps<"/profile/[id]">["params"] }) {
+async function Profile({
+  params,
+  searchParams,
+}: {
+  params: PageProps<"/profile/[id]">["params"];
+  searchParams: PageProps<"/profile/[id]">["searchParams"];
+}) {
   const { id } = await params;
+  const sp = await searchParams;
+  const tab = sp.tab === "cases" ? "cases" : "overview";
+  const viewer = await getCurrentUser();
+  const own = viewer?.id === id;
   const profile = await getPublicProfile(id);
   if (!profile) notFound();
 
@@ -78,6 +90,58 @@ async function Profile({ params }: { params: PageProps<"/profile/[id]">["params"
         </div>
       </div>
 
+      <nav className="flex gap-6 border-b border-[#cdc3b6]">
+        <Link
+          href={`/profile/${id}`}
+          className={tab === "overview" ? "border-b-2 border-[#333231] pb-2 text-base text-[#333231]" : "pb-2 text-base text-[#6b6763]"}
+        >
+          Overview
+        </Link>
+        <Link
+          href={`/profile/${id}?tab=cases`}
+          className={tab === "cases" ? "border-b-2 border-[#333231] pb-2 text-base text-[#333231]" : "pb-2 text-base text-[#6b6763]"}
+        >
+          {own ? "My cases" : "Cases"}
+          {helped.length > 0 ? ` (${helped.length})` : ""}
+        </Link>
+      </nav>
+
+      {tab === "cases" ? (
+        <section className="space-y-6">
+          <p className="text-base text-[#6b6763]">
+            {own
+              ? "Cases you accepted stay here. Open one any time, including after treatment."
+              : "Cases they accepted."}
+          </p>
+          {helped.length === 0 ? (
+            <p className="bg-[#e4e1dd] p-6 text-base text-[#333231]">No accepted cases yet.</p>
+          ) : (
+            <>
+              {helped.some((c) => c.status !== "resolved") && (
+                <div className="space-y-3">
+                  <h2 className="text-lg font-semibold">Open</h2>
+                  {helped
+                    .filter((c) => c.status !== "resolved")
+                    .map((c) => (
+                      <CaseCard key={c.id} c={c} />
+                    ))}
+                </div>
+              )}
+              {helped.some((c) => c.status === "resolved") && (
+                <div className="space-y-3">
+                  <h2 className="text-lg font-semibold">Finished</h2>
+                  {helped
+                    .filter((c) => c.status === "resolved")
+                    .map((c) => (
+                      <CaseCard key={c.id} c={c} />
+                    ))}
+                </div>
+              )}
+            </>
+          )}
+        </section>
+      ) : (
+      <>
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         {statsRow.map((s) => (
           <Card key={s.label} className="py-4">
@@ -118,6 +182,8 @@ async function Profile({ params }: { params: PageProps<"/profile/[id]">["params"
           </div>
         </section>
       )}
+      </>
+      )}
     </div>
   );
 }
@@ -134,7 +200,7 @@ export default function ProfilePage(props: PageProps<"/profile/[id]">) {
           </div>
         }
       >
-        <Profile params={props.params} />
+        <Profile params={props.params} searchParams={props.searchParams} />
       </Suspense>
     </div>
   );

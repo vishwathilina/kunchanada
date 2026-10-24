@@ -11,9 +11,12 @@ export type NotificationItem = {
   readAt: string | null;
   createdAt: string;
   href?: string;
+  response?: "accepted" | "declined" | null;
 };
 
-type NotificationsResponse = { unread: number; items: NotificationItem[] };
+export type NotificationViewer = { id: string; role: string; verified: boolean };
+
+type NotificationsResponse = { unread: number; viewer?: NotificationViewer; items: NotificationItem[] };
 
 export const POLL_INTERVAL_MS = 20_000;
 

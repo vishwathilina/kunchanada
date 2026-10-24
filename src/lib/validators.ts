@@ -102,7 +102,7 @@ const medicationSchema = z.object({
 export const treatmentSchema = z.object({
   caseId: z.uuid(),
   diagnosis: z.string().trim().min(3).max(300),
-  injuryTags: injuryTags.refine((tags) => tags.length > 0, "Pick at least one tag"),
+  injuryTags,
   medications: z
     .string()
     .optional()

@@ -83,29 +83,12 @@ function assertPublicHttps(url: string) {
   return parsed;
 }
 
-async function fetchPublicImage(url: string, hops = 0): Promise<Response> {
-  assertPublicHttps(url);
-  const res = await fetch(url, { redirect: "manual", signal: AbortSignal.timeout(12_000) });
-  if (res.status >= 300 && res.status < 400) {
-    const next = res.headers.get("location");
-    if (!next || hops >= 2) throw new UserError("A photo could not be opened.");
-    return fetchPublicImage(new URL(next, url).toString(), hops + 1);
-  }
-  return res;
-}
-
-async function imagePart(url: string) {
-  const res = await fetchPublicImage(url);
-  if (!res.ok) throw new UserError("A photo could not be opened.");
-  const type = res.headers.get("content-type")?.split(";")[0]?.trim() || "image/jpeg";
-  if (!type.startsWith("image/")) throw new UserError("One of the files is not a photo.");
-  const length = Number(res.headers.get("content-length") ?? 0);
-  if (length > 4_000_000) throw new UserError("A photo is too large to read. Use one under 4 MB.");
-  const bytes = Buffer.from(await res.arrayBuffer());
-  if (bytes.byteLength > 4_000_000) throw new UserError("A photo is too large to read. Use one under 4 MB.");
+/** Public https photos (UploadThing) go straight to OpenRouter. No base64 bloat. */
+function imagePart(url: string) {
+  const parsed = assertPublicHttps(url);
   return {
     type: "image_url" as const,
-    image_url: { url: `data:${type};base64,${bytes.toString("base64")}` },
+    image_url: { url: parsed.toString() },
   };
 }
 

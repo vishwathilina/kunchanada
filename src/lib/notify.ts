@@ -56,12 +56,11 @@ export async function notifyNearbyResponders(
     LIMIT 500
   `);
   const ids = result.rows.map((r) => r.id);
-  const severityLabel = c.severity.charAt(0).toUpperCase() + c.severity.slice(1);
   await notifyUsers(tx, ids, {
     type: "new_case_nearby",
     caseId: c.id,
-    title: `${severityLabel} case near you`,
-    body: c.title,
+    title: "Injured animal in your area",
+    body: `${c.title}. Accept if you can go and treat it, or reject if you can't.`,
   });
   return ids.length;
 }

@@ -6,6 +6,7 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { OutcomeBadge, SeverityBadge, StatusBadge } from "@/components/cases/badges";
 import { CaseTimeline } from "@/components/cases/case-timeline";
+import { CompleteTreatment } from "@/components/cases/complete-treatment";
 import { EmergencyPanel } from "@/components/cases/emergency-panel";
 import { FlagDialog } from "@/components/cases/flag-dialog";
 import { ResolveDialog } from "@/components/cases/resolve-dialog";
@@ -187,7 +188,10 @@ async function CaseView({ params, searchParams }: { params: Params; searchParams
               </Button>
             )}
           </div>
-          {c.treatments.length === 0 ? (
+          {ctx.canFileTreatment && !resolved && (
+            <CompleteTreatment caseId={c.id} initialTags={c.injuryTags} />
+          )}
+          {c.treatments.length === 0 && !(ctx.canFileTreatment && !resolved) ? (
             <p className="text-sm text-muted-foreground">No treatment reports yet.</p>
           ) : (
             c.treatments.map((t) => <TreatmentReportCard key={t.report.id} t={t} />)

@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { timeAgo } from "@/lib/format";
 import { cn } from "@/lib/utils";
+import { CaseInvite } from "./case-invite";
 import { notificationHref, useMarkRead, useNotifications } from "./use-notifications";
 
 export function NotificationBell() {
@@ -76,19 +77,28 @@ export function NotificationBell() {
           <p className="px-2 py-6 text-center text-sm text-muted-foreground">You&apos;re all caught up.</p>
         ) : (
           data.items.map((n) => (
-            <DropdownMenuItem key={n.id} asChild>
+            <DropdownMenuItem
+              key={n.id}
+              onSelect={(e) => e.preventDefault()}
+              className="flex flex-col items-start gap-0.5"
+            >
               <Link
                 href={notificationHref(n)}
                 onClick={() => !n.readAt && markRead.mutate([n.id])}
-                className="flex flex-col items-start gap-0.5"
+                className="flex w-full flex-col items-start gap-0.5"
               >
                 <span className={cn("flex w-full items-center gap-2 text-sm", !n.readAt && "font-semibold")}>
                   {!n.readAt && <span className="size-2 shrink-0 rounded-full bg-primary" />}
                   <span className="truncate">{n.title}</span>
                 </span>
                 <span className="line-clamp-2 text-xs text-muted-foreground">{n.body}</span>
-                <span className="text-[11px] text-muted-foreground">{timeAgo(n.createdAt)}</span>
+                <span className="text-[11px] text-muted-foreground">
+                  {timeAgo(n.createdAt)}
+                  {n.response === "accepted" ? " · On your profile" : ""}
+                  {n.response === "declined" ? " · Rejected" : ""}
+                </span>
               </Link>
+              <CaseInvite item={n} viewer={data.viewer} />
             </DropdownMenuItem>
           ))
         )}

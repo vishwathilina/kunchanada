@@ -4,7 +4,7 @@ import { BadgeCheck, CheckCircle2, HandHelping, Loader2, LogOut, MapPinCheck, St
 import Link from "next/link";
 import { useTransition } from "react";
 import { toast } from "sonner";
-import { checkInAction, claimSlotAction, leaveCaseAction, verifyCaseAction } from "@/actions/responders";
+import { checkInAction, claimSlotAction, declineCaseAction, leaveCaseAction, verifyCaseAction } from "@/actions/responders";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -105,26 +105,24 @@ export function ResponderPanel(p: Props) {
               <LogOut /> I can&apos;t help anymore
             </Button>
           </div>
-        ) : (
+        ) : p.viewerRole === "vet" ? (
           <div className="grid gap-2">
             <Button
-              disabled={pending || volunteersFull}
-              onClick={() => run(() => claimSlotAction(p.caseId, "volunteer"))}
+              disabled={pending || vetsFull || !p.viewerIsVerifiedVet}
+              onClick={() => run(() => claimSlotAction(p.caseId, "vet"))}
             >
-              {pending ? <Loader2 className="animate-spin" /> : <HandHelping />}
-              {volunteersFull ? "Volunteer slots full" : "I can help — on my way"}
+              {pending ? <Loader2 className="animate-spin" /> : <Stethoscope />}
+              {!p.viewerIsVerifiedVet ? "Vet verification pending" : vetsFull ? "Vet slot taken" : "Accept — I'll treat this"}
             </Button>
-            {p.viewerRole === "vet" && (
-              <Button
-                variant="secondary"
-                disabled={pending || vetsFull || !p.viewerIsVerifiedVet}
-                onClick={() => run(() => claimSlotAction(p.caseId, "vet"))}
-              >
-                <Stethoscope />
-                {!p.viewerIsVerifiedVet ? "Vet slot (awaiting verification)" : vetsFull ? "Vet slot taken" : "Take the vet slot"}
-              </Button>
-            )}
+            <Button variant="outline" disabled={pending} onClick={() => run(() => declineCaseAction(p.caseId))}>
+              Reject
+            </Button>
           </div>
+        ) : (
+          <Button disabled={pending || volunteersFull} onClick={() => run(() => claimSlotAction(p.caseId, "volunteer"))}>
+            {pending ? <Loader2 className="animate-spin" /> : <HandHelping />}
+            {volunteersFull ? "Volunteer slots full" : "I can help — on my way"}
+          </Button>
         )}
 
         {!p.resolved && p.signedIn && !p.verified && !p.isReporter && (

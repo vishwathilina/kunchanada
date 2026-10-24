@@ -79,7 +79,45 @@ export async function claimSlotAction(caseId: string, role: "volunteer" | "vet")
       });
     });
     refresh();
-    return { ok: true, message: "Thank you! The reporter has been notified you're coming." };
+    return { ok: true, message: "Accepted. This case is now on your profile." };
+  } catch (err) {
+    return toActionError(err);
+  }
+}
+
+export async function declineCaseAction(caseId: string): Promise<ActionState> {
+  try {
+    const user = await assertUser();
+    const role = user.isVerifiedVet ? "vet" : "volunteer";
+    await db.transaction(async (tx) => {
+      const c = await lockCase(tx, caseId);
+      if (c.status === "resolved") throw new UserError("This case is already finished.");
+      const rows = await responderRows(tx, caseId);
+      const existing = rows.find((r) => r.userId === user.id);
+      if (existing && existing.status !== "left") throw new UserError("You're already going to this case.");
+      if (existing) {
+        await tx
+          .update(caseResponders)
+          .set({ role, status: "left", leftAt: new Date(), checkedInAt: null })
+          .where(eq(caseResponders.id, existing.id));
+      } else {
+        await tx.insert(caseResponders).values({
+          caseId,
+          userId: user.id,
+          role,
+          status: "left",
+          leftAt: new Date(),
+        });
+      }
+      await tx.insert(caseUpdates).values({
+        caseId,
+        userId: user.id,
+        type: "leave",
+        message: `${displayName(user)} can't attend this one`,
+      });
+    });
+    refresh();
+    return { ok: true, message: "Rejected. The case stays open for someone who can go." };
   } catch (err) {
     return toActionError(err);
   }

@@ -12,9 +12,12 @@ import { notifyCaseParticipants } from "@/lib/notify";
 import { treatmentSchema } from "@/lib/validators";
 
 export async function createTreatmentAction(_prev: ActionState, formData: FormData): Promise<ActionState> {
-  let caseId: string;
+  let caseId = "";
+  let profileId = "";
+  const done = formData.get("complete") === "1";
   try {
     const user = await assertUser(["vet"]);
+    profileId = user.id;
     if (!user.isVerifiedVet) throw new UserError("Only verified vets can file treatment reports.");
     const parsed = treatmentSchema.safeParse(Object.fromEntries(formData));
     if (!parsed.success) return fromZodError(parsed.error);
@@ -53,7 +56,10 @@ export async function createTreatmentAction(_prev: ActionState, formData: FormDa
         .update(cases)
         .set({
           injuryTags: mergedTags,
-          status: c.status === "resolved" ? c.status : "in_treatment",
+          status: c.status === "resolved" || done ? "resolved" : "in_treatment",
+          outcome: done ? "recovered" : c.outcome,
+          outcomeNote: done ? d.diagnosis : c.outcomeNote,
+          resolvedAt: done ? now : c.resolvedAt,
           firstVetCheckInAt: c.firstVetCheckInAt ?? now,
           updatedAt: now,
         })
@@ -76,5 +82,6 @@ export async function createTreatmentAction(_prev: ActionState, formData: FormDa
     return toActionError(err);
   }
 
+  if (done) redirect(`/profile/${profileId}?tab=cases`);
   redirect(`/cases/${caseId}#treatment`);
 }
