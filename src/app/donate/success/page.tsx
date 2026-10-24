@@ -1,6 +1,7 @@
 import { eq } from "drizzle-orm";
 import { CircleCheckBig, Clock } from "lucide-react";
 import type { Metadata } from "next";
+import { connection } from "next/server";
 import Link from "next/link";
 import { Suspense } from "react";
 import { Button } from "@/components/ui/button";
@@ -19,13 +20,15 @@ export const metadata: Metadata = { title: "Thank you" };
  * delayed or not configured (e.g. local development without the Stripe CLI).
  */
 async function Result({ searchParams }: { searchParams: PageProps<"/donate/success">["searchParams"] }) {
+  await connection();
   const sp = await searchParams;
   const sessionId = typeof sp.session_id === "string" ? sp.session_id : null;
   if (!sessionId || !isStripeConfigured()) return <Fallback />;
 
   let paid = false;
   try {
-    const session = await getStripe().checkout.sessions.retrieve(sessionId);
+    const stripe = await getStripe();
+    const session = await stripe.checkout.sessions.retrieve(sessionId);
     if (session.payment_status === "paid") {
       paid = true;
       await completeDonation({

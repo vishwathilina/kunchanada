@@ -33,7 +33,8 @@ export async function donateAction(_prev: ActionState, formData: FormData): Prom
     const amountCents = Math.round(d.amount * 100);
     const donationId = crypto.randomUUID();
     const returnPath = d.caseId ? `/cases/${d.caseId}` : "/donate";
-    const session = await getStripe().checkout.sessions.create({
+    const stripe = await getStripe();
+    const session = await stripe.checkout.sessions.create({
       mode: "payment",
       submit_type: "donate",
       client_reference_id: donationId,

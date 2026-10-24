@@ -1,5 +1,6 @@
 import { HandCoins, HeartHandshake, Receipt, Users } from "lucide-react";
 import type { Metadata } from "next";
+import { connection } from "next/server";
 import { Suspense } from "react";
 import { CaseCard } from "@/components/cases/case-card";
 import { DonateForm } from "@/components/donations/donate-form";
@@ -61,6 +62,17 @@ async function NeedyCases() {
   );
 }
 
+async function StripeNotice() {
+  await connection();
+  if (isStripeConfigured()) return null;
+  return (
+    <Alert className="mb-4">
+      <AlertTitle>Stripe not configured</AlertTitle>
+      <AlertDescription>Set STRIPE_SECRET_KEY to accept donations.</AlertDescription>
+    </Alert>
+  );
+}
+
 async function CancelledNotice({ searchParams }: { searchParams: PageProps<"/donate">["searchParams"] }) {
   const sp = await searchParams;
   if (sp.donation !== "cancelled") return null;
@@ -111,12 +123,9 @@ export default function DonatePage(props: PageProps<"/donate">) {
             <CardDescription>Used wherever it&apos;s needed most.</CardDescription>
           </CardHeader>
           <CardContent>
-            {!isStripeConfigured() && (
-              <Alert className="mb-4">
-                <AlertTitle>Stripe not configured</AlertTitle>
-                <AlertDescription>Set STRIPE_SECRET_KEY to accept donations.</AlertDescription>
-              </Alert>
-            )}
+            <Suspense fallback={null}>
+              <StripeNotice />
+            </Suspense>
             <Suspense fallback={<Skeleton className="h-80 w-full" />}>
               <GeneralForm />
             </Suspense>
