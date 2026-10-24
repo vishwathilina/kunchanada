@@ -1,5 +1,6 @@
 import { eq, isNotNull } from "drizzle-orm";
 import Link from "next/link";
+import { connection } from "next/server";
 import { Suspense } from "react";
 import { MomentRow, RoomPhoto, type Moment } from "@/components/home/room-and-row";
 import { StripeLink } from "@/components/home/stripe-link";
@@ -80,6 +81,7 @@ function cityCounts(cases: CaseListItem[]) {
 }
 
 async function Docket() {
+  await connection();
   const open = await listCases({ scope: "open" });
   const cities = cityCounts(open);
   if (cities.length === 0) {
@@ -147,6 +149,7 @@ function Hero() {
 }
 
 async function Showcase() {
+  await connection();
   const open = await listCases({ scope: "open", limit: 6 });
   const slips = open.slice(0, 6);
   return (
@@ -188,6 +191,7 @@ async function Showcase() {
 }
 
 async function Proof() {
+  await connection();
   const vets = await db
     .select({ name: users.name, city: users.city })
     .from(users)

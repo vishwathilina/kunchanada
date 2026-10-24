@@ -18,6 +18,7 @@ import { isStripeConfigured } from "@/lib/stripe";
 export const metadata: Metadata = { title: "Donate" };
 
 async function Stats() {
+  await connection();
   const s = await getFundStats();
   const items = [
     { label: "General fund balance", value: formatMoney(Math.max(0, s.generalBalanceCents)), icon: HandCoins },
@@ -44,11 +45,13 @@ async function Stats() {
 }
 
 async function GeneralForm() {
+  await connection();
   const user = await getCurrentUser();
   return <DonateForm defaultName={user?.name} />;
 }
 
 async function NeedyCases() {
+  await connection();
   const cases = (await listCases({ scope: "open" }))
     .filter((c) => c.fundingGoalCents > c.raisedCents)
     .slice(0, 4);

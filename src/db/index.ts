@@ -9,6 +9,31 @@ export type Database = NodePgDatabase<typeof schema>;
 export type Transaction = Parameters<Parameters<Database["transaction"]>[0]>[0];
 export type DbOrTx = Database | Transaction;
 
+type Queryable = {
+  query: (...args: never[]) => unknown;
+  connect: (...args: never[]) => unknown;
+};
+
+/**
+ * Neon authenticates with SCRAM, which calls `node:crypto.randomBytes` while the
+ * socket is already open. During `next build` that aborts prerender. Waiting for
+ * `connection()` first moves the handshake to request time. Scripts such as the
+ * seed run outside Next and skip the wait.
+ */
+async function afterRequest() {
+  if (!process.env.NEXT_RUNTIME) return;
+  const { connection } = await import("next/server");
+  await connection();
+}
+
+function gatePool<T extends Queryable>(pool: T): T {
+  const query = pool.query.bind(pool);
+  const connect = pool.connect.bind(pool);
+  pool.query = ((...args: never[]) => afterRequest().then(() => query(...args))) as T["query"];
+  pool.connect = ((...args: never[]) => afterRequest().then(() => connect(...args))) as T["connect"];
+  return pool;
+}
+
 function createDb(): Database {
   const url = process.env.DATABASE_URL;
   if (!url) {
@@ -19,11 +44,11 @@ function createDb(): Database {
   // serverless hosts. Any other Postgres (e.g. the local PostGIS container) uses node-postgres.
   if (new URL(url).hostname.endsWith(".neon.tech")) {
     neonConfig.webSocketConstructor = ws;
-    const pool = new NeonPool({ connectionString: url });
+    const pool = gatePool(new NeonPool({ connectionString: url }));
     return drizzleNeon({ client: pool, schema }) as unknown as Database;
   }
 
-  const pool = new PgPool({ connectionString: url, max: 10 });
+  const pool = gatePool(new PgPool({ connectionString: url, max: 10 }));
   return drizzlePg({ client: pool, schema });
 }
 
