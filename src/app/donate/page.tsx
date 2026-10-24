@@ -89,7 +89,7 @@ async function CancelledNotice({ searchParams }: { searchParams: PageProps<"/don
 
 export default function DonatePage(props: PageProps<"/donate">) {
   return (
-    <div className="mx-auto w-full max-w-6xl space-y-8 px-4 py-8">
+    <div className="mx-auto w-full max-w-6xl space-y-8 px-5 py-8 sm:px-8">
       <div className="grid items-center gap-6 lg:grid-cols-[minmax(0,1fr)_280px]">
         <div className="max-w-2xl space-y-2">
           <h1 className="text-3xl font-medium sm:text-4xl">Fund rescues you can see</h1>
@@ -98,9 +98,9 @@ export default function DonatePage(props: PageProps<"/donate">) {
             approved by our team and published with its receipt.
           </p>
         </div>
-        <StoryFrame photo={PHOTOS.volunteerDog} className="hidden aspect-[4/3] rounded-2xl lg:block" sizes="280px" />
+        <StoryFrame photo={PHOTOS.volunteerDog} className="hidden aspect-[4/3] lg:block" sizes="280px" />
       </div>
-      <div className="grid items-center gap-4 overflow-hidden rounded-2xl border bg-card sm:grid-cols-[160px_minmax(0,1fr)]">
+      <div className="grid items-center gap-4 overflow-hidden bg-[#e4e1dd] sm:grid-cols-[160px_minmax(0,1fr)]">
         <StoryFrame photo={PHOTOS.poodleCast} className="h-36 sm:h-full sm:min-h-28" sizes="160px" />
         <p className="px-4 py-3 text-sm text-muted-foreground sm:px-2">
           A cast, a course of medicine, a night at a clinic. Donations on Kunchanada are tied to a case or to the general

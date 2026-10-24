@@ -123,27 +123,18 @@ function CasesSkeleton() {
 
 export default function CasesPage(props: PageProps<"/cases">) {
   return (
-    <div className="mx-auto w-full max-w-7xl space-y-6 px-4 py-8">
-      <StoryFrame
-        photo={PHOTOS.elephantRescue}
-        className="h-48 rounded-3xl sm:h-60"
-        sizes="(min-width: 1280px) 1100px, 100vw"
-      >
-        <figcaption className="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-black/70 via-black/20 to-transparent p-5 text-white sm:p-7">
-          <p className="text-xs tracking-wide text-white/80 uppercase">In the field</p>
-          <p className="font-heading max-w-xl text-2xl sm:text-3xl">Some rescues take a whole village. Most start with one person who stopped.</p>
-        </figcaption>
-      </StoryFrame>
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-medium">Animals that need help</h1>
-          <p className="text-muted-foreground">
-            Critical cases with nobody on the way float to the top. Claim a slot if you can help.
+    <div className="mx-auto w-full max-w-7xl space-y-6 px-5 py-8 sm:px-8">
+      <div className="grid items-end gap-6 lg:grid-cols-[minmax(0,1fr)_16rem]">
+        <div className="max-w-2xl">
+          <h1 className="text-3xl">Open cases</h1>
+          <p className="mt-2 text-base">
+            Critical cases with nobody on the way sit at the top. Claim a slot if you can get there.
           </p>
+          <Button asChild className="mt-5 h-12 bg-[#5c6b54] px-5 text-base text-white">
+            <Link href="/cases/new">File a report</Link>
+          </Button>
         </div>
-        <Button asChild>
-          <Link href="/cases/new">Report an animal</Link>
-        </Button>
+        <StoryFrame photo={PHOTOS.elephantRescue} className="aspect-[4/3]" sizes="256px" />
       </div>
       <Suspense fallback={<CasesSkeleton />}>
         <CasesContent searchParams={props.searchParams} />

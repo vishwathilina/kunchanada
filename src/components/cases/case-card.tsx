@@ -1,71 +1,39 @@
-import { Clock, MapPin, PawPrint, Stethoscope, Users } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { Progress } from "@/components/ui/progress";
 import type { Outcome } from "@/lib/constants";
-import { formatKm, formatMoney, timeAgo, titleCase } from "@/lib/format";
+import { formatMoney, titleCase } from "@/lib/format";
 import type { CaseListItem } from "@/lib/queries/cases";
 import { OutcomeBadge, SeverityBadge, StatusBadge } from "./badges";
 
 export function CaseCard({ c }: { c: CaseListItem }) {
   const resolved = c.status === "resolved";
   return (
-    <Link
-      href={`/cases/${c.id}`}
-      className="group flex overflow-hidden rounded-xl border bg-card shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-lg"
-    >
-      <div className="relative w-28 shrink-0 bg-muted sm:w-36">
+    <Link href={`/cases/${c.id}`} className="group grid grid-cols-[7.5rem_minmax(0,1fr)] bg-[#e4e1dd] text-[#333231] hover:bg-[#cdc3b6]">
+      <div className="relative min-h-32 bg-[#cdc3b6]">
         {c.imageUrl ? (
-          <Image
-            src={c.imageUrl}
-            alt={c.title}
-            fill
-            sizes="144px"
-            className="object-cover transition-transform group-hover:scale-105"
-          />
+          <Image src={c.imageUrl} alt="" fill sizes="120px" className="object-cover" />
         ) : (
-          <PawPrint className="absolute inset-0 m-auto size-8 text-muted-foreground" />
+          <span className="absolute inset-0 flex items-center justify-center px-2 text-center text-base">{titleCase(c.species)}</span>
         )}
       </div>
-      <div className="flex min-w-0 flex-1 flex-col gap-2 p-3">
-        <div className="flex flex-wrap items-center gap-1.5">
+      <div className="flex min-w-0 flex-col gap-1 p-4">
+        <p className="flex flex-wrap gap-x-2 text-base">
           {!resolved && <SeverityBadge severity={c.severity} />}
           <StatusBadge status={c.status} />
           {c.outcome && <OutcomeBadge outcome={c.outcome as Outcome} />}
-        </div>
-        <h3 className="line-clamp-2 font-medium leading-snug">{c.title}</h3>
-        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
-          <span>{titleCase(c.species)}</span>
-          <span className="inline-flex items-center gap-1">
-            <Clock className="size-3" /> {timeAgo(resolved && c.resolvedAt ? c.resolvedAt : c.createdAt)}
-          </span>
-          {c.distanceMeters !== null ? (
-            <span className="inline-flex items-center gap-1">
-              <MapPin className="size-3" /> {formatKm(c.distanceMeters)} away
-            </span>
-          ) : c.city ? (
-            <span className="inline-flex items-center gap-1">
-              <MapPin className="size-3" /> {c.city}
-            </span>
-          ) : null}
-        </div>
-        {!resolved && (
-          <div className="flex flex-wrap items-center gap-3 text-xs">
-            <span className="inline-flex items-center gap-1">
-              <Users className="size-3.5" /> {c.volunteers}/{c.maxVolunteers} volunteers
-            </span>
-            <span className={`inline-flex items-center gap-1 ${c.vets === 0 ? "font-medium text-destructive" : ""}`}>
-              <Stethoscope className="size-3.5" /> {c.vets}/{c.maxVets} vet{c.vetCheckedIn ? " · on site" : ""}
-            </span>
-          </div>
-        )}
+        </p>
+        <h3 className="text-lg leading-snug">{c.title}</h3>
+        <p className="text-base">
+          {titleCase(c.species)}
+          {c.city ? ` · ${c.city}` : ""}
+        </p>
+        <p className="text-base">
+          {c.vets}/{c.maxVets} vets · {c.volunteers}/{c.maxVolunteers} volunteers
+        </p>
         {c.fundingGoalCents > 0 && (
-          <div className="mt-auto space-y-1">
-            <Progress value={Math.min(100, (c.raisedCents / c.fundingGoalCents) * 100)} className="h-1.5" />
-            <p className="text-xs text-muted-foreground">
-              {formatMoney(c.raisedCents)} of {formatMoney(c.fundingGoalCents)} raised
-            </p>
-          </div>
+          <p className="text-base">
+            {formatMoney(c.raisedCents)} of {formatMoney(c.fundingGoalCents)}
+          </p>
         )}
       </div>
     </Link>

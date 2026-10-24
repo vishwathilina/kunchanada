@@ -14,12 +14,12 @@ async function LoginFormWithNext({ searchParams }: { searchParams: PageProps<"/l
 
 export default function LoginPage(props: PageProps<"/login">) {
   return (
-    <div className="grid w-full max-w-4xl overflow-hidden rounded-3xl border bg-card shadow-sm lg:grid-cols-2">
+    <div className="grid w-full max-w-4xl overflow-hidden bg-[#eeecea] lg:grid-cols-2">
     <StoryFrame photo={PHOTOS.hugDog} className="hidden h-full min-h-80 lg:block" sizes="420px" />
-    <Card className="w-full border-0 shadow-none">
+    <Card className="w-full bg-[#eeecea]">
       <CardHeader>
-        <CardTitle className="text-2xl">Welcome back</CardTitle>
-        <CardDescription>Sign in to report, respond, and track the animals you&apos;ve helped.</CardDescription>
+        <CardTitle className="text-3xl">Sign in</CardTitle>
+        <CardDescription className="text-base text-[#333231]">Report an animal, claim a slot, or read a case you are already on.</CardDescription>
       </CardHeader>
       <CardContent>
         <Suspense fallback={<LoginForm />}>

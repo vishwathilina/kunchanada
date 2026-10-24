@@ -67,8 +67,6 @@ const STRIPS = [
   { bg: "#e4e1dd", fg: "#333231" },
 ];
 
-const SLIP_HEIGHTS = ["26svh", "34svh", "42svh", "30svh", "44svh", "28svh"];
-const SLIP_TILT = ["", "-rotate-1", "rotate-1", "", "-rotate-2", ""];
 
 function cityCounts(cases: CaseListItem[]) {
   const counts = new Map<string, number>();
@@ -102,7 +100,7 @@ function Hero() {
   return (
     <section className="grid gap-3 bg-[#cdc3b6] p-3 lg:grid-cols-2">
       <article
-        className="relative z-10 flex min-h-[70svh] min-w-0 flex-col overflow-hidden bg-[#eeecea] p-6 max-lg:-mt-6 sm:p-10 lg:min-h-[calc(100svh-4.5rem)]"
+        className="relative z-10 flex min-h-[70svh] min-w-0 flex-col overflow-hidden bg-[#eeecea] p-6 sm:p-10 lg:min-h-[calc(100svh-4.5rem)]"
         style={{ borderRadius: 16 }}
       >
         <div className="h-10 w-full overflow-hidden sm:h-14" aria-hidden>
@@ -141,7 +139,7 @@ function Hero() {
           </Link>
         </nav>
       </article>
-      <div className="min-w-0 max-lg:order-first">
+      <div className="min-w-0">
         <RoomPhoto />
       </div>
     </section>
@@ -166,13 +164,13 @@ async function Showcase() {
           Each slip is a case on the sheet. Species, city, severity, and what has been raised.
         </p>
       </div>
-      <div className="absolute inset-x-0 bottom-0 flex items-end gap-3 overflow-x-auto px-3">
-        {slips.map((item, index) => (
+      <div className="absolute inset-x-5 bottom-5 grid grid-cols-2 gap-3">
+        {slips.slice(0, 4).map((item, index) => (
           <Link
             key={item.id}
             href={`/cases/${item.id}`}
-            className={`arrive-fade flex w-[70vw] shrink-0 flex-col bg-[#eeecea] p-4 text-[#333231] sm:w-auto sm:min-w-0 sm:flex-1 ${SLIP_TILT[index] ?? ""}`}
-            style={{ height: SLIP_HEIGHTS[index], minWidth: "11rem" }}
+            className="arrive-fade flex min-w-0 flex-col overflow-hidden bg-[#eeecea] p-4 text-[#333231]"
+            style={{ animationDelay: `${index * 80}ms` }}
           >
             <p className="text-base font-semibold leading-snug">{item.title}</p>
             <p className="my-2 text-base">· · ·</p>
@@ -202,7 +200,7 @@ async function Proof() {
 
   return (
     <section className="relative h-[78vh] overflow-hidden bg-[#333231]">
-      <article className="arrive-fade absolute top-12 left-1/2 w-[92vw] -translate-x-1/2 rotate-1 bg-[#eeecea] p-7 text-center sm:w-[56vw] sm:rotate-[1.5deg] sm:p-14" style={{ aspectRatio: "5 / 7" }}>
+      <article className="arrive-fade absolute top-12 left-1/2 w-[calc(100%-40px)] -translate-x-1/2 overflow-hidden bg-[#eeecea] p-7 text-center sm:w-[56vw] sm:p-14" style={{ aspectRatio: "5 / 7" }}>
         <h2 className="text-[length:var(--step-head)]">On the sheet</h2>
         <img
           src={PHOTOS.calfCheckup.src}
@@ -220,9 +218,9 @@ async function Proof() {
 
 function Gallery() {
   return (
-    <section className="bg-[#eeecea] px-8 py-16 sm:py-24">
+    <section className="bg-[#eeecea] px-5 py-16 sm:px-8 sm:py-24">
       <h2 className="arrive mb-10 text-[length:var(--step-head)]">In the field</h2>
-      <div className="grid grid-cols-2 gap-x-2 gap-y-7 sm:grid-cols-4 sm:gap-x-3">
+      <div className="grid grid-cols-2 gap-x-3 gap-y-7 sm:grid-cols-4">
         {FIELD.map((tile, index) => {
           const ink = STRIPS[index % STRIPS.length]!;
           return (
@@ -235,16 +233,13 @@ function Gallery() {
                 className="story-zoom aspect-[4/5] w-full object-cover"
                 style={{ objectPosition: tile.photo.focus }}
               />
-              <figcaption className="flex h-24 flex-col justify-center gap-1 px-3 text-[length:var(--step-small)]" style={{ background: ink.bg, color: ink.fg }}>
-                <span className="flex justify-between gap-2 tabular-nums">
+              <figcaption className="flex min-h-16 flex-col justify-center gap-1 overflow-hidden px-3 py-2 text-base" style={{ background: ink.bg, color: ink.fg }}>
+                <span className="flex flex-wrap gap-x-2">
                   {tile.values.map((value) => (
                     <span key={value}>{value}</span>
                   ))}
                 </span>
-                <span className="flex justify-between gap-2">
-                  <span>{tile.place}</span>
-                  <span className="text-right">{tile.maker}</span>
-                </span>
+                <span className="truncate">{tile.place}</span>
               </figcaption>
             </figure>
           );

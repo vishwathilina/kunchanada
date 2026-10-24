@@ -18,13 +18,9 @@ async function FormForUser() {
 export default function NewCasePage() {
   return (
     <div className="mx-auto w-full max-w-3xl space-y-6 px-4 py-8">
-      <StoryFrame photo={PHOTOS.cheetahField} className="h-44 rounded-2xl" sizes="768px">
-        <figcaption className="absolute inset-0 flex items-end bg-gradient-to-t from-black/70 to-transparent p-4 text-sm text-white">
-          Field teams handle the animal. Your report is what gets them there.
-        </figcaption>
-      </StoryFrame>
+      <StoryFrame photo={PHOTOS.cheetahField} className="h-44" sizes="768px" />
       <div>
-        <h1 className="text-3xl font-medium">Report an animal in need</h1>
+        <h1 className="text-3xl">Report an animal in need</h1>
         <p className="text-muted-foreground">
           Nearby vets and volunteers will be alerted as soon as you submit.
         </p>

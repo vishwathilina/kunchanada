@@ -9,7 +9,7 @@ export const metadata: Metadata = { title: "Join Kunchanada" };
 export default function RegisterPage() {
   return (
     <div className="grid w-full max-w-5xl items-start gap-6 lg:grid-cols-[240px_minmax(0,1fr)]">
-    <StoryFrame photo={PHOTOS.raccoonCare} className="sticky top-20 hidden aspect-[3/4] rounded-3xl lg:block" sizes="240px" />
+    <StoryFrame photo={PHOTOS.raccoonCare} className="sticky top-20 hidden aspect-[3/4] lg:block" sizes="240px" />
     <Card className="w-full">
       <CardHeader>
         <CardTitle className="text-2xl">Join the rescue network</CardTitle>
