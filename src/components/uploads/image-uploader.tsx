@@ -1,11 +1,11 @@
 "use client";
 
-import { Link2, X } from "lucide-react";
+import { X } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { UploadDropzone } from "@/lib/uploadthing";
+import { UploadButton } from "@/lib/uploadthing";
 
 export type UploadedImage = { url: string; key?: string };
 
@@ -37,7 +37,7 @@ export function ImageUploader({
       {value.length > 0 && (
         <div className="grid grid-cols-3 gap-2 sm:grid-cols-6">
           {value.map((img, i) => (
-            <div key={img.url} className="group relative aspect-square overflow-hidden rounded-lg border bg-muted">
+            <div key={img.url} className="group relative aspect-square overflow-hidden bg-[#cdc3b6]">
               {/* eslint-disable-next-line @next/next/no-img-element -- preview of arbitrary user-provided hosts */}
               <img src={img.url} alt={`Photo ${i + 1}`} className="size-full object-cover" />
               <button
@@ -54,13 +54,17 @@ export function ImageUploader({
       )}
 
       {value.length < max && (
-        <UploadDropzone
+        <UploadButton
           endpoint="caseImage"
-          className="ut-button:bg-primary ut-label:text-primary ut-upload-icon:text-primary/60 border-dashed py-6"
-          content={{ label: "Take or choose photos of the animal", allowedContent: `Images up to 8MB · ${max - value.length} remaining` }}
+          appearance={{
+            container: "w-full items-start gap-2",
+            button: "h-12 bg-[#5c6b54] px-5 text-base text-white ut-ready:bg-[#5c6b54] ut-uploading:bg-[#5c6b54]",
+            allowedContent: "text-base text-[#333231]",
+          }}
+          content={{ button: "Add a photo", allowedContent: `Up to 8MB · ${max - value.length} left` }}
           onClientUploadComplete={(files) => {
             onChange([...value, ...files.map((f) => ({ url: f.ufsUrl, key: f.key }))].slice(0, max));
-            toast.success(`${files.length} photo${files.length > 1 ? "s" : ""} uploaded`);
+            toast.success(`${files.length} photo${files.length > 1 ? "s" : ""} added`);
           }}
           onUploadError={(err) => {
             toast.error(err.message || "Upload failed");
@@ -87,12 +91,8 @@ export function ImageUploader({
             </Button>
           </div>
         ) : (
-          <button
-            type="button"
-            className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
-            onClick={() => setShowUrl(true)}
-          >
-            <Link2 className="size-3" /> Add a photo by link instead
+          <button type="button" className="text-base text-[#333231] underline" onClick={() => setShowUrl(true)}>
+            Add a photo by link
           </button>
         )}
       </div>

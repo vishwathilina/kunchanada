@@ -31,7 +31,7 @@ export function NewCaseForm({ defaultCity }: { defaultCity: string }) {
   const fe = state.fieldErrors ?? {};
 
   return (
-    <form action={formAction} className="space-y-8">
+    <form action={formAction} className="space-y-6">
       <input type="hidden" name="imageUrls" value={JSON.stringify(images.map((i) => i.url))} />
       <input type="hidden" name="imageKeys" value={JSON.stringify(images.map((i) => i.key ?? ""))} />
       <input type="hidden" name="species" value={species} />
@@ -41,9 +41,9 @@ export function NewCaseForm({ defaultCity }: { defaultCity: string }) {
       <input type="hidden" name="lng" value={location?.lng ?? ""} />
       <input type="hidden" name="photoReading" value={reading ? JSON.stringify(reading) : ""} />
 
-      <section className="space-y-3">
-        <h2 className="font-semibold">1. Photos</h2>
-        <FormField label="Clear photos help vets judge the injury before they arrive" error={fe.imageUrls}>
+      <section className="space-y-4 bg-[#e4e1dd] p-5 sm:p-7">
+        <h2 className="text-2xl">Photos</h2>
+        <FormField label="A clear photo of the animal, where it is lying." error={fe.imageUrls}>
           <ImageUploader value={images} onChange={setImages} />
         </FormField>
         <PhotoAssist
@@ -57,8 +57,8 @@ export function NewCaseForm({ defaultCity }: { defaultCity: string }) {
         />
       </section>
 
-      <section className="space-y-4">
-        <h2 className="font-semibold">2. What&apos;s wrong?</h2>
+      <section className="space-y-4 bg-[#e4e1dd] p-5 sm:p-7">
+        <h2 className="text-2xl">The animal</h2>
         <FormField label="How urgent is it?" error={fe.severity}>
           <div className="grid gap-2 sm:grid-cols-3">
             {SEVERITIES.map((s) => (
@@ -66,17 +66,10 @@ export function NewCaseForm({ defaultCity }: { defaultCity: string }) {
                 key={s}
                 type="button"
                 onClick={() => setSeverity(s)}
-                className={cn(
-                  "rounded-xl border p-3 text-left transition-colors hover:bg-muted",
-                  severity === s && "ring-2 ring-offset-1",
-                )}
-                style={severity === s ? { borderColor: SEVERITY_META[s].color, ["--tw-ring-color" as string]: SEVERITY_META[s].color } : undefined}
+                className={cn("p-4 text-left", severity === s ? "bg-[#333231] text-[#eeecea]" : "bg-[#eeecea] text-[#333231]")}
               >
-                <div className="flex items-center gap-2 font-medium">
-                  <span className="size-2.5 rounded-full" style={{ background: SEVERITY_META[s].color }} />
-                  {SEVERITY_META[s].label}
-                </div>
-                <p className="mt-1 text-xs text-muted-foreground">{SEVERITY_META[s].description}</p>
+                <span className="block text-lg">{SEVERITY_META[s].label}</span>
+                <span className="mt-1 block text-base">{SEVERITY_META[s].description}</span>
               </button>
             ))}
           </div>
@@ -108,13 +101,13 @@ export function NewCaseForm({ defaultCity }: { defaultCity: string }) {
             placeholder="Is it conscious? Bleeding? Can it walk? Is it in a dangerous spot? Anything a responder should know."
           />
         </FormField>
-        <FormField label="What do you see? (optional, helps match past treatments)" error={fe.injuryTags}>
+        <FormField label="What you can see. Optional, and it helps the next case of this kind." error={fe.injuryTags}>
           <TagPicker value={tags} onChange={setTags} />
         </FormField>
       </section>
 
-      <section className="space-y-4">
-        <h2 className="font-semibold">3. Where is the animal?</h2>
+      <section className="space-y-4 bg-[#e4e1dd] p-5 sm:p-7">
+        <h2 className="text-2xl">The place</h2>
         <FormField label="Location" error={fe.lat}>
           <LocationPicker
             value={location}
@@ -141,8 +134,8 @@ export function NewCaseForm({ defaultCity }: { defaultCity: string }) {
         </div>
       </section>
 
-      <section className="space-y-4">
-        <h2 className="font-semibold">4. Help needed</h2>
+      <section className="space-y-4 bg-[#e4e1dd] p-5 sm:p-7">
+        <h2 className="text-2xl">Who should come</h2>
         <div className="grid gap-4 sm:grid-cols-3">
           <FormField label="Volunteers needed" htmlFor="maxVolunteers" error={fe.maxVolunteers} hint="Stops alerting once full.">
             <Input id="maxVolunteers" name="maxVolunteers" type="number" min={1} max={10} defaultValue={3} />
@@ -162,7 +155,7 @@ export function NewCaseForm({ defaultCity }: { defaultCity: string }) {
       </section>
 
       <FormError message={state.error} />
-      <Button type="submit" size="lg" className="w-full sm:w-auto" disabled={pending}>
+      <Button type="submit" size="lg" className="h-14 bg-[#5c6b54] px-6 text-base text-white" disabled={pending}>
         {pending ? <Loader2 className="animate-spin" /> : <Send />}
         Send alert to nearby responders
       </Button>

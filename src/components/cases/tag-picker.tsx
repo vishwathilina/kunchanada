@@ -28,8 +28,8 @@ export function TagPicker({
             onClick={() => toggle(tag)}
             aria-pressed={active}
             className={cn(
-              "rounded-full border px-2.5 py-1 text-xs transition-colors",
-              active ? "border-primary bg-primary text-primary-foreground" : "hover:bg-muted",
+              "px-3 py-2 text-base",
+              active ? "bg-[#333231] text-[#eeecea]" : "bg-[#eeecea] text-[#333231]",
             )}
           >
             {titleCase(tag)}

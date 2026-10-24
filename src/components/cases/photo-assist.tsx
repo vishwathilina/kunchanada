@@ -20,14 +20,14 @@ export function PhotoAssist({
   const [reading, setReading] = useState<PhotoReading | null>(null);
 
   return (
-    <div className="space-y-3 rounded-xl bg-muted/60 p-4">
+    <div className="space-y-3 bg-[#eeecea] p-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <p className="text-sm">
-          Read the photos for the species and visible injuries, then check them against past treatments.
+        <p className="max-w-[36ch] text-base">
+          Read the photo for the species and the injuries you can see, then check past cases of that animal.
         </p>
         <Button
           type="button"
-          variant="secondary"
+          className="h-12 bg-[#333231] px-4 text-base text-[#eeecea]"
           disabled={pending || imageUrls.length === 0}
           onClick={async () => {
             setPending(true);
@@ -46,9 +46,9 @@ export function PhotoAssist({
           Identify the animal
         </Button>
       </div>
-      {error && <p className="text-sm text-destructive">{error}</p>}
+      {error && <p className="text-base text-[#8f3d32]">{error}</p>}
       {reading && (
-        <div className="space-y-2 text-sm">
+        <div className="space-y-2 text-base">
           <p>
             Looks like {titleCase(reading.commonName)} · {reading.confidence} confidence · {titleCase(reading.severity as Severity)}
           </p>
