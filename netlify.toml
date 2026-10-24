@@ -1,0 +1,5 @@
+# NEXT_PUBLIC_* values are meant to ship in the browser bundle. Next inlines
+# NEXT_PUBLIC_APP_URL into server chunks and source maps, and .env.example
+# documents the local default, so the secrets scanner flags a public URL.
+[build.environment]
+  SECRETS_SCAN_OMIT_KEYS = "NEXT_PUBLIC_APP_URL,NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,NEXT_PUBLIC_CURRENCY"
