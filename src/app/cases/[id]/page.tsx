@@ -11,6 +11,7 @@ import { FlagDialog } from "@/components/cases/flag-dialog";
 import { ResolveDialog } from "@/components/cases/resolve-dialog";
 import { ResponderPanel } from "@/components/cases/responder-panel";
 import { TreatmentReportCard } from "@/components/cases/treatment-report-card";
+import { PhotoReadingPanel } from "@/components/cases/photo-reading-panel";
 import { TreatmentSuggestions } from "@/components/cases/treatment-suggestions";
 import { UpdateForm } from "@/components/cases/update-form";
 import { DonateForm } from "@/components/donations/donate-form";
@@ -27,6 +28,7 @@ import { ESCALATION_MINUTES, EMERGENCY_RADIUS_KM, viewerContext } from "@/lib/ca
 import type { Outcome } from "@/lib/constants";
 import { timeAgo, titleCase } from "@/lib/format";
 import { findVerifiedVetsNear } from "@/lib/geo";
+import { parseStoredReading } from "@/lib/photo-reading";
 import { getCaseDetail } from "@/lib/queries/cases";
 import { findSimilarTreatments } from "@/lib/recommendations";
 
@@ -191,6 +193,13 @@ async function CaseView({ params, searchParams }: { params: Params; searchParams
             c.treatments.map((t) => <TreatmentReportCard key={t.report.id} t={t} />)
           )}
         </section>
+
+        <PhotoReadingPanel
+          reading={parseStoredReading(c.photoReading)}
+          reportedSpecies={c.species}
+          caseId={c.id}
+          canRead={!!user && (user.role === "vet" || user.role === "admin" || ctx.isParticipant)}
+        />
 
         {(tags.length > 0 || !resolved) && <TreatmentSuggestions summary={suggestions} species={c.species} />}
 

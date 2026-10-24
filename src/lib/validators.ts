@@ -77,6 +77,7 @@ export const createCaseSchema = z.object({
   fundingGoal: z.coerce.number().min(0).max(100_000),
   imageUrls: jsonStringArray.pipe(z.array(z.url()).min(1, "Add at least one photo").max(6)),
   imageKeys: jsonStringArray,
+  photoReading: z.string().optional(),
 });
 
 export const caseUpdateSchema = z.object({

@@ -3,6 +3,7 @@
 import { Loader2, Send } from "lucide-react";
 import { useActionState, useState } from "react";
 import { createCaseAction } from "@/actions/cases";
+import { PhotoAssist } from "@/components/cases/photo-assist";
 import { TagPicker } from "@/components/cases/tag-picker";
 import { FormError, FormField } from "@/components/form-field";
 import { LocationPicker, type LatLng } from "@/components/map/location-picker";
@@ -13,6 +14,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { ImageUploader, type UploadedImage } from "@/components/uploads/image-uploader";
 import { initialActionState } from "@/lib/action-state";
 import { SEVERITIES, SEVERITY_META, SPECIES, type Severity } from "@/lib/constants";
+import type { PhotoReading } from "@/lib/photo-reading-types";
 import { CURRENCY, titleCase } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
@@ -25,6 +27,7 @@ export function NewCaseForm({ defaultCity }: { defaultCity: string }) {
   const [location, setLocation] = useState<LatLng | null>(null);
   const [address, setAddress] = useState("");
   const [city, setCity] = useState(defaultCity);
+  const [reading, setReading] = useState<PhotoReading | null>(null);
   const fe = state.fieldErrors ?? {};
 
   return (
@@ -36,12 +39,22 @@ export function NewCaseForm({ defaultCity }: { defaultCity: string }) {
       <input type="hidden" name="injuryTags" value={JSON.stringify(tags)} />
       <input type="hidden" name="lat" value={location?.lat ?? ""} />
       <input type="hidden" name="lng" value={location?.lng ?? ""} />
+      <input type="hidden" name="photoReading" value={reading ? JSON.stringify(reading) : ""} />
 
       <section className="space-y-3">
         <h2 className="font-semibold">1. Photos</h2>
         <FormField label="Clear photos help vets judge the injury before they arrive" error={fe.imageUrls}>
           <ImageUploader value={images} onChange={setImages} />
         </FormField>
+        <PhotoAssist
+          imageUrls={images.map((image) => image.url)}
+          onApply={(next) => {
+            setReading(next);
+            setSpecies(next.species);
+            setSeverity(next.severity);
+            setTags(next.injuryTags);
+          }}
+        />
       </section>
 
       <section className="space-y-4">

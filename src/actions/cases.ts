@@ -10,9 +10,19 @@ import { assertUser } from "@/lib/auth";
 import { POINTS } from "@/lib/constants";
 import { awardPoints } from "@/lib/gamification";
 import { notifyAdmins, notifyNearbyResponders } from "@/lib/notify";
+import { parseStoredReading } from "@/lib/photo-reading";
 import { createCaseSchema, flagSchema } from "@/lib/validators";
 
 const MAX_REPORTS_PER_HOUR = 5;
+
+function readPhotoField(raw: string | undefined) {
+  if (!raw) return null;
+  try {
+    return parseStoredReading(JSON.parse(raw));
+  } catch {
+    return null;
+  }
+}
 
 export async function createCaseAction(_prev: ActionState, formData: FormData): Promise<ActionState> {
   let caseId: string;
@@ -47,6 +57,7 @@ export async function createCaseAction(_prev: ActionState, formData: FormData): 
           maxVolunteers: d.maxVolunteers,
           maxVets: d.maxVets,
           fundingGoalCents: Math.round(d.fundingGoal * 100),
+          photoReading: readPhotoField(d.photoReading),
         })
         .returning();
 

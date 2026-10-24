@@ -25,6 +25,7 @@ Product write-up and competitor comparison: [docs/PROPOSAL.md](docs/PROPOSAL.md)
 - Stripe Checkout for per-case donations and the general fund
 - Leaflet + OpenStreetMap
 - In-app notifications (TanStack Query, 20s poll)
+- Photo reading through MiniMax M3.1 Flash on OpenRouter (`minimax/minimax-m3.1-flash`)
 
 ## Setup
 
@@ -70,6 +71,7 @@ Required for a full run:
 | `NEXT_PUBLIC_CURRENCY` | Defaults to `usd` |
 | `NEXT_PUBLIC_APP_URL` | `http://localhost:3000` locally |
 | `ESCALATION_MINUTES` | Minutes before the emergency button unlocks (default 30) |
+| `OPENROUTER_API_KEY` | Photo reading: species, visible injuries, and steps drawn from past cases of that species |
 
 The app boots without Stripe or UploadThing. Donations and uploads show a configuration message until those keys are set. Case photos can also be added by pasting an image URL.
 

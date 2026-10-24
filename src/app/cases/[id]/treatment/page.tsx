@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
+import { PhotoReadingPanel } from "@/components/cases/photo-reading-panel";
 import { TreatmentSuggestions } from "@/components/cases/treatment-suggestions";
 import { StoryFrame } from "@/components/media/story-frame";
 import { PHOTOS } from "@/lib/photos";
@@ -10,6 +11,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { requireRole } from "@/lib/auth";
+import { parseStoredReading } from "@/lib/photo-reading";
 import { getCaseDetail } from "@/lib/queries/cases";
 import { findSimilarTreatments } from "@/lib/recommendations";
 import { TreatmentForm } from "./treatment-form";
@@ -50,7 +52,15 @@ async function TreatmentContent({ params }: { params: PageProps<"/cases/[id]/tre
           )}
         </CardContent>
       </Card>
-      <TreatmentSuggestions summary={summary} species={c.species} />
+      <div className="space-y-6">
+        <PhotoReadingPanel
+          reading={parseStoredReading(c.photoReading)}
+          reportedSpecies={c.species}
+          caseId={c.id}
+          canRead={user.role === "vet"}
+        />
+        <TreatmentSuggestions summary={summary} species={c.species} />
+      </div>
     </div>
   );
 }

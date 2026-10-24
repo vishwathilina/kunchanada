@@ -14,6 +14,7 @@ import {
   uniqueIndex,
   uuid,
 } from "drizzle-orm/pg-core";
+import type { PhotoReading } from "../lib/photo-reading-types";
 import {
   CASE_STATUSES,
   DONATION_STATUSES,
@@ -105,6 +106,7 @@ export const cases = pgTable(
     outcome: outcomeEnum("outcome"),
     outcomeNote: text("outcome_note"),
     injuryTags: text("injury_tags").array().notNull().default(sql`'{}'::text[]`),
+    photoReading: jsonb("photo_reading").$type<PhotoReading | null>(),
     lat: doublePrecision("lat").notNull(),
     lng: doublePrecision("lng").notNull(),
     location: geography("location").generatedAlwaysAs(pointFromLatLng),

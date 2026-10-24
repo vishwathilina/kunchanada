@@ -31,7 +31,7 @@ export function TreatmentSuggestions({ summary, species }: { summary: Suggestion
                 <div>
                   <p className="font-medium leading-snug">{s.diagnosis}</p>
                   <p className="text-xs text-muted-foreground">
-                    {s.vetName} ·{" "}
+                    {s.overlap} shared {s.overlap === 1 ? "injury" : "injuries"} · {s.vetName} ·{" "}
                     <Link href={`/cases/${s.caseId}`} className="hover:underline">
                       {s.caseTitle}
                     </Link>
